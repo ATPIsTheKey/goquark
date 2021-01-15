@@ -13,7 +13,7 @@ const (
 	IGNORE_SKIPPABLES = 1 << iota
 )
 
-type ErrorHandler func(tok token.TokenPos, msg string)
+type ErrorHandler func(tokPos token.TokenPos, msg string)
 
 type Lexer struct {
 	src  []byte
@@ -129,7 +129,7 @@ func (lexer *Lexer) isStrChar() bool {
 
 func (lexer *Lexer) isSkippable() bool {
 	ch := lexer.currentChar()
-	return ch == ' ' || ch == '\t'
+	return ch == ' ' || ch == '\t' || ch == '\n'
 }
 
 func (lexer *Lexer) Next() token.Token {
@@ -148,7 +148,7 @@ func (lexer *Lexer) Next() token.Token {
 		if lexer.opts&IGNORE_SKIPPABLES > 0 {
 			lexer.discardConsumedChars()
 			if lexer.reachedEndOfSource(0) {
-				return token.Token{FPos: fPos, Kind: token.EOF, Val: ""}
+				return token.Token{FPos: fPos, Kind: token.EOS, Raw: ""}
 			} else {
 				return lexer.Next()
 			}
@@ -262,12 +262,23 @@ func (lexer *Lexer) Next() token.Token {
 		lexer.discardConsumedChars()
 	}
 
-	return token.Token{FPos: fPos, Kind: kind, Val: lit}
+	return token.Token{FPos: fPos, Kind: kind, Raw: lit}
+}
+
+func (lexer *Lexer) GetTokens() []token.Token {
+	var toks []token.Token
+
+	for !lexer.reachedEndOfSource(0) {
+		toks = append(toks, lexer.Next())
+	}
+
+	return toks
 }
 
 func TestInputLoop() {
 	reader := bufio.NewReader(os.Stdin)
-	lex := &Lexer{}
+	lexer := &Lexer{}
+
 	errHandler := func(pos token.TokenPos, msg string) {
 		fmt.Printf("LexerError at (line: %d, col: %d): %s\n", pos.Line, pos.Column, msg)
 		os.Exit(-1)
@@ -276,10 +287,10 @@ func TestInputLoop() {
 	for {
 		fmt.Printf(">>> ")
 		text, _ := reader.ReadBytes('\n')
-		lex.Init(text, errHandler, IGNORE_SKIPPABLES)
-		for !lex.reachedEndOfSource(0) {
-			t := lex.Next()
-			fmt.Printf("<%s>: %#v\n", t.Kind.String(), t.Val)
+		lexer.Init(text, errHandler, IGNORE_SKIPPABLES)
+		for !lexer.reachedEndOfSource(0) {
+			t := lexer.Next()
+			fmt.Printf("<%s>: %#v\n", t.Kind.String(), t.Raw)
 		}
 	}
 }

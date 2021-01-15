@@ -1,0 +1,31 @@
+defun gcd :: a, b => ?(
+    a             | b == 0,
+    gcd(b, a % b) | ...
+);
+
+defun gcd :: a, b => ?( a | b == 0, gcd(b, a % b) | ...);
+defun fact :: n => 1 if n == 1 else n * fact(n - 1);
+defun fact :: n => ?( 1 | n == 1, n * fact(n - 1) * n | ...);
+
+defun plus :: a, b => a + b;
+fun :: a => fun :: b, c => a + b + c;
+
+def (a = 2, b = 3);
+let a = 3 in a + a;
+
+(fun :: x => x)(1);
+(fun :: a, b => a + b)(1, 2);
+(fun :: a => fun :: b => a + b)(1, 2);
+(let a, b = 1, 2 in fun :: x => a + b + x)(1);
+
+def Y = fun :: f => (fun :: x => f(x(x)))(fun :: x => f(x(x)));
+
+let fact = fun :: n => if n == 1 then 1 else fact(n - 1) * n in fact(2);
+let fact = Y(fun :: f => fun :: n => if n == 1 then 1 else f(n - 1) * n) in fact(3);
+let gcd = fun :: a, b => if b == 0 then a else gcd(b, a % b) in gcd(745, 65);
+let gcd = Y(fun :: f => fun :: a, b => if b == 0 then a else f(b, a % b)) in gcd(14, 28);
+let ack = fun :: m, n => if m == 0 then n + 1 else if n == 0 then ack(m - 1, 1) else ack(m - 1, ack(m, n - 1)) in ack(2, 2);
+
+// not working
+
+defun pair :: a, b, f => (f(a, b)); defun first :: a, b => a; defun second :: a, b => b;

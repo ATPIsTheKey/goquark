@@ -1,46 +1,79 @@
 package parser
 
 import (
+	"bufio"
+	"fmt"
 	"goquark/goquark/core/ast"
 	"goquark/goquark/core/lexer"
 	"goquark/goquark/core/token"
+	"os"
+	"strconv"
 )
 
-type ErrorHandler func(msg string, tok token.Token)
+const (
+	NOOPTS = 0
+)
+
+type ErrorHandler func(tok token.Token, msg string)
 
 type Parser struct {
-	src []token.Token // source
-	len int           // length of source
+	src []token.Token
+	len int
+	pos int
 
-	pos int // position of parser in src
-
-	opts int // options passed to lex
+	opts int
 	err  ErrorHandler
+
+	uniqueIdentCounter int
 }
 
-type parseContext struct {
-	remappedVars map[string]string
+type exprParseCtx struct {
+	toBeAlphaConverted map[string]string
+}
+
+func makeEmptyExprParseCtx() exprParseCtx {
+	ctx := exprParseCtx{}
+	ctx.toBeAlphaConverted = make(map[string]string)
+	return ctx
+}
+
+func (ctx *exprParseCtx) enqueueAlphaConversion(identVal string, newIdentVal string) {
+	ctx.toBeAlphaConverted[identVal] = newIdentVal
+}
+
+func (ctx *exprParseCtx) requiresAlphaConversion(identVal string) bool {
+	_, ok := ctx.toBeAlphaConverted[identVal]
+	return ok
 }
 
 func (parser *Parser) Init(src []token.Token, err ErrorHandler, opts int) {
 	// Explicitly initialize all fields since a parser may be reused.
 	parser.len = len(src)
 	parser.src = src
-
 	parser.pos = 0
 
 	parser.opts = opts
 	parser.err = err
+
+	parser.uniqueIdentCounter = 0
 }
 
-func (parser *Parser) reachedEndOfSource() bool { return parser.pos >= parser.len }
+func (parser *Parser) getUniqueIdentVal() string {
+	ret := "%" + strconv.Itoa(parser.uniqueIdentCounter)
+	parser.uniqueIdentCounter += 1
+	return ret
+}
+
+func (parser *Parser) currentToken() token.Token { return parser.src[parser.pos] }
 
 // todo: update lexer methods for consistency
 func (parser *Parser) getNextToken() token.Token {
-	ret := parser.src[parser.pos]
+	ret := parser.currentToken()
 	parser.consumeToken()
 	return ret
 }
+
+func (parser *Parser) reachedEndOfSource() bool { return parser.currentToken().Kind == token.EOS }
 
 func (parser *Parser) consumeToken() {
 	parser.pos += 1
@@ -51,7 +84,7 @@ func (parser *Parser) matchAnyTokenFrom(kinds ...token.TokenKind) bool {
 		return false
 	} else {
 		for _, kind := range kinds {
-			if parser.getNextToken().Kind == kind {
+			if parser.currentToken().Kind == kind {
 				return true
 			}
 		}
@@ -61,23 +94,8 @@ func (parser *Parser) matchAnyTokenFrom(kinds ...token.TokenKind) bool {
 
 // todo: update lexer methods for consistency
 func (parser *Parser) expectAnyTokenFrom(msg string, kinds ...token.TokenKind) {
-	if !parser.matchAnyTokenFrom(kinds...) {
-		parser.err(msg, parser.getNextToken())
-	}
-}
-
-func (parser *Parser) parseStmt() ast.Stmt {
-	switch {
-	case parser.matchAnyTokenFrom(token.IMPORT):
-		return nil // todo
-	case parser.matchAnyTokenFrom(token.EXPORT):
-		return nil // todo
-	case parser.matchAnyTokenFrom(token.DEF):
-		return nil // todo
-	case parser.matchAnyTokenFrom(token.DEFUN):
-		return nil // todo
-	default:
-		return parser.parseExpr(&parseContext{nil})
+	if parser.reachedEndOfSource() || !parser.matchAnyTokenFrom(kinds...) {
+		parser.err(parser.currentToken(), msg)
 	}
 }
 
@@ -95,7 +113,48 @@ func (parser *Parser) parseIdentList() []token.Token {
 	return identList
 }
 
-func (parser *Parser) parseExpr(ctx *parseContext) ast.Expr {
+func (parser *Parser) parseStmt() ast.Stmt {
+	switch {
+	case parser.matchAnyTokenFrom(token.IMPORT):
+		return nil // todo
+	case parser.matchAnyTokenFrom(token.EXPORT):
+		return nil // todo
+	case parser.matchAnyTokenFrom(token.DEF):
+		return parser.parseDefStmt()
+	case parser.matchAnyTokenFrom(token.DEFUN):
+		return nil // todo
+	default:
+		parse := parser.parseExpr(makeEmptyExprParseCtx())
+		return parse
+	}
+}
+
+func (parser *Parser) parseStmtList() []ast.Stmt {
+	var stmts []ast.Stmt
+
+	for !parser.reachedEndOfSource() {
+		stmts = append(stmts, parser.parseStmt())
+		parser.expectAnyTokenFrom("todo", token.SEMICOLON)
+		parser.consumeToken()
+	}
+
+	return stmts
+}
+
+func (parser *Parser) parseDefStmt() ast.Stmt {
+	var names []token.Token
+	var exprs []ast.Expr
+
+	parser.consumeToken() // token.DEF
+	names = parser.parseIdentList()
+	parser.expectAnyTokenFrom("todo", token.EQUAL)
+	parser.consumeToken()
+	exprs = parser.parseExprList(makeEmptyExprParseCtx())
+
+	return ast.DefStmt{Names: names, Exprs: exprs}
+}
+
+func (parser *Parser) parseExpr(ctx exprParseCtx) ast.Expr {
 	switch {
 	case parser.matchAnyTokenFrom(token.LET, token.LETREC):
 		return parser.parseLetExpr(ctx)
@@ -103,18 +162,15 @@ func (parser *Parser) parseExpr(ctx *parseContext) ast.Expr {
 		return parser.parseConditionalExpr(ctx)
 	case parser.matchAnyTokenFrom(token.FUN):
 		return parser.parseFunctionExpr(ctx)
-	case parser.matchAnyTokenFrom(token.QUESTION_MARK_LEFT_PARENTHESIS):
-		return nil // todo
 	default:
 		return parser.parseOperatorExpr(ctx, 1)
 	}
 }
 
-func (parser *Parser) parseExprList(ctx *parseContext) []ast.Expr {
+func (parser *Parser) parseExprList(ctx exprParseCtx) []ast.Expr {
 	var exprList []ast.Expr
 
 	for gotComma := true; gotComma && !parser.reachedEndOfSource(); {
-		parser.expectAnyTokenFrom("todo", token.IDENT)
 		exprList = append(exprList, parser.parseExpr(ctx))
 		if gotComma = parser.matchAnyTokenFrom(token.COMMA); gotComma {
 			parser.consumeToken()
@@ -124,12 +180,12 @@ func (parser *Parser) parseExprList(ctx *parseContext) []ast.Expr {
 	return exprList
 }
 
-func (parser *Parser) parseLetExpr(ctx *parseContext) ast.Expr {
+func (parser *Parser) parseLetExpr(ctx exprParseCtx) ast.Expr {
 	var names []token.Token
 	var initExprs []ast.Expr
 	var bodyExpr ast.Expr
 
-	parser.consumeToken() // token.FUN
+	parser.consumeToken() // token.LET
 	names = parser.parseIdentList()
 	parser.expectAnyTokenFrom("todo", token.EQUAL)
 	parser.consumeToken()
@@ -138,27 +194,41 @@ func (parser *Parser) parseLetExpr(ctx *parseContext) ast.Expr {
 	parser.consumeToken()
 	bodyExpr = parser.parseExpr(ctx)
 
-	return ast.LetExpr{Names: names, InitExprs: initExprs, BodyExpr: bodyExpr}
+	return ast.LetExpr{InitNames: names, InitExprs: initExprs, BodyExpr: bodyExpr}
 }
 
-func (parser *Parser) parseFunctionExpr(ctx *parseContext) ast.Expr {
-	var argNames []token.Token
+func (parser *Parser) parseFunctionExpr(ctx exprParseCtx) ast.Expr {
+	var argNames, alphaConvertedArgNames []token.Token
 	var bodyExpr ast.Expr
 
-	// todo: unction expressions are alpha converted at parse time
+	parser.consumeToken() // Token.FUN
 	parser.expectAnyTokenFrom("todo", token.DOUBLE_COLON)
 	parser.consumeToken()
-	argNames = parser.parseIdentList()
+
+	// Remap variables within the function to uniquely named internal variables
+	for _, ident := range parser.parseIdentList() {
+		newIdentVal := parser.getUniqueIdentVal()
+		ctx.enqueueAlphaConversion(ident.Raw, newIdentVal)
+		argNames = append(argNames, ident)
+		ident.Raw = newIdentVal
+		alphaConvertedArgNames = append(alphaConvertedArgNames, ident)
+	}
+
 	parser.expectAnyTokenFrom("todo", token.EQUAL_GREATER)
 	parser.consumeToken()
 	bodyExpr = parser.parseExpr(ctx)
 
-	return ast.FunctionExpr{ArgumentNames: argNames, BodyExpr: bodyExpr}
+	for _, name := range argNames {
+		delete(ctx.toBeAlphaConverted, name.Raw)
+	}
+
+	return ast.FunctionExpr{ArgumentNames: alphaConvertedArgNames, BodyExpr: bodyExpr}
 }
 
-func (parser *Parser) parseConditionalExpr(ctx *parseContext) ast.Expr {
+func (parser *Parser) parseConditionalExpr(ctx exprParseCtx) ast.Expr {
 	var condition, consequent, alternative ast.Expr
 
+	parser.consumeToken() // token.IF
 	condition = parser.parseExpr(ctx)
 	parser.expectAnyTokenFrom("todo", token.THEN)
 	parser.consumeToken()
@@ -175,7 +245,7 @@ func (parser *Parser) parseConditionalExpr(ctx *parseContext) ast.Expr {
 	return ast.ConditionalExpr{Condition: condition, Consequent: consequent, Alternative: alternative}
 }
 
-func (parser *Parser) parseListExpr(ctx *parseContext) ast.Expr {
+func (parser *Parser) parseListExpr(ctx exprParseCtx) ast.Expr {
 	var exprList []ast.Expr
 
 	exprList = parser.parseExprList(ctx)
@@ -185,7 +255,7 @@ func (parser *Parser) parseListExpr(ctx *parseContext) ast.Expr {
 	return ast.ListExpr{Items: exprList}
 }
 
-func (parser *Parser) parseOperatorExpr(ctx *parseContext, prec int) ast.Expr {
+func (parser *Parser) parseOperatorExpr(ctx exprParseCtx, prec int) ast.Expr {
 	switch prec {
 	case 1:
 		return parser.parseBinaryExpr(ctx, prec, token.XOR, token.OR)
@@ -216,7 +286,7 @@ func (parser *Parser) parseOperatorExpr(ctx *parseContext, prec int) ast.Expr {
 	}
 }
 
-func (parser *Parser) parseBinaryExpr(ctx *parseContext, prec int, opTokTypes ...token.TokenKind) ast.Expr {
+func (parser *Parser) parseBinaryExpr(ctx exprParseCtx, prec int, opTokTypes ...token.TokenKind) ast.Expr {
 	var lhsExpr, rhsExpr, expr ast.Expr
 	var operand token.Token
 
@@ -235,7 +305,7 @@ func (parser *Parser) parseBinaryExpr(ctx *parseContext, prec int, opTokTypes ..
 			}
 		} else {
 			rhsExpr = parser.parseBinaryExpr(ctx, prec, opTokTypes...)
-			expr = ast.BinaryExpr{LhsExpr: expr, Operand: operand, RhsExpr: rhsExpr}
+			expr = ast.BinaryExpr{LhsExpr: lhsExpr, Operand: operand, RhsExpr: rhsExpr}
 		}
 
 		return expr
@@ -244,7 +314,7 @@ func (parser *Parser) parseBinaryExpr(ctx *parseContext, prec int, opTokTypes ..
 	}
 }
 
-func (parser *Parser) parseUnaryExpr(ctx *parseContext, prec int, opTokTypes ...token.TokenKind) ast.Expr {
+func (parser *Parser) parseUnaryExpr(ctx exprParseCtx, prec int, opTokTypes ...token.TokenKind) ast.Expr {
 	var expr ast.Expr
 	var operand token.Token
 
@@ -261,7 +331,7 @@ func (parser *Parser) parseUnaryExpr(ctx *parseContext, prec int, opTokTypes ...
 	}
 }
 
-func (parser *Parser) parseApplicationExpr(ctx *parseContext) ast.Expr {
+func (parser *Parser) parseApplicationExpr(ctx exprParseCtx) ast.Expr {
 	var function, expr ast.Expr
 	var args []ast.Expr
 
@@ -290,8 +360,9 @@ func (parser *Parser) parseApplicationExpr(ctx *parseContext) ast.Expr {
 	}
 }
 
-func (parser *Parser) parseAtomExpr(ctx *parseContext) ast.Expr {
+func (parser *Parser) parseAtomExpr(ctx exprParseCtx) ast.Expr {
 	var expr ast.Expr
+	var tok token.Token
 
 	if parser.matchAnyTokenFrom(token.LEFT_PARENTHESIS) {
 		parser.consumeToken()
@@ -300,8 +371,42 @@ func (parser *Parser) parseAtomExpr(ctx *parseContext) ast.Expr {
 		parser.consumeToken()
 		return expr
 	} else {
-		return ast.AtomExpr{Token: parser.getNextToken()}
+		tok = parser.getNextToken()
+		if tok.Kind == token.IDENT && ctx.requiresAlphaConversion(tok.Raw) {
+			newVal := ctx.toBeAlphaConverted[tok.Raw]
+			tok.Raw = newVal
+		}
+		return ast.AtomicExpr{Token: tok}
+	}
+}
+
+func (parser *Parser) GetAst() []ast.Stmt {
+	return parser.parseStmtList()
+}
+
+func TestInputLoop() {
+	reader := bufio.NewReader(os.Stdin)
+	lexer_ := &lexer.Lexer{}
+	parser := &Parser{}
+
+	lexerErrHandler := func(tokPos token.TokenPos, msg string) {
+		fmt.Printf("LexerError at (line: %d, col: %d): %s\n", tokPos.Line, tokPos.Column, msg)
+		os.Exit(-1)
 	}
 
-	// todo: error handling, alpha conversion
+	parserErrHandler := func(tok token.Token, msg string) {
+		fmt.Printf("ParserError at (line: %d, col: %d): %s\n", tok.FPos.Line, tok.FPos.Column, msg)
+		os.Exit(-1)
+	}
+
+	for {
+		fmt.Printf(">>> ")
+		text, _ := reader.ReadBytes('\n')
+		lexer_.Init(text, lexerErrHandler, lexer.IGNORE_SKIPPABLES)
+		parser.Init(lexer_.GetTokens(), parserErrHandler, 0)
+
+		for _, stmt := range parser.GetAst() {
+			fmt.Println(stmt.JsonRepr())
+		}
+	}
 }

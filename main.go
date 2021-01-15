@@ -1,9 +1,9 @@
 package main
 
 import (
-	"goquark/goquark/core/lexer"
+	"goquark/goquark/core/evaluate"
 )
 
 func main() {
-	lexer.TestInputLoop()
+	evaluate.TestInputLoop()
 }

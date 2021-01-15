@@ -29,6 +29,10 @@ const (
 	TAIL
 	NIL
 	NOT
+	MAX
+	MIN
+	CONJ
+	ABS
 	strictly_unary_operator_end
 
 	unary_binary_operator_beg
@@ -116,7 +120,7 @@ type TokenPos struct {
 type Token struct {
 	FPos TokenPos
 	Kind TokenKind
-	Val  string
+	Raw  string
 }
 
 var Single_char_tokens = map[string]TokenKind{
@@ -177,6 +181,10 @@ var Keyword_tokens = map[string]TokenKind{
 	"head":      HEAD,
 	"tail":      TAIL,
 	"nil":       NIL,
+	"min":       MIN,
+	"max":       MAX,
+	"conj":      CONJ,
+	"abs":       ABS,
 	"cond":      COND,
 	"if":        IF,
 	"then":      THEN,
@@ -238,9 +246,9 @@ func (tok TokenKind) IsUnaryOperator() bool {
 	return strictly_unary_operator_beg < tok && tok < strictly_unary_operator_end
 }
 
-func (tok TokenKind) IsLeftAssociative() bool { return tok == VERTICAL_BAR || tok == DOUBLE_STAR }
+func (tok TokenKind) IsLeftAssociative() bool { return !tok.IsRightAssociative() }
 
-func (tok TokenKind) IsRightAssociative() bool { return !tok.IsLeftAssociative() }
+func (tok TokenKind) IsRightAssociative() bool { return tok == VERTICAL_BAR || tok == DOUBLE_STAR }
 
 func (tok TokenKind) IsKeyword() bool { return keyword_beg < tok && tok < keyword_end }
 
