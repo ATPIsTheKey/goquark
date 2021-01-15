@@ -31,8 +31,13 @@ type Stmt interface {
 }
 
 type (
-	AtomExpr struct {
+	AtomicExpr struct {
 		Token token.Token
+	}
+
+	CellExpr struct {
+		First  Expr
+		Second Expr
 	}
 
 	ListExpr struct {
@@ -67,12 +72,12 @@ type (
 	}
 
 	LetExpr struct {
-		Names     []token.Token
+		InitNames []token.Token
 		InitExprs []Expr
 		BodyExpr  Expr
 	}
 
-	AssignmentStmt struct {
+	DefStmt struct {
 		Names []token.Token
 		Exprs []Expr
 	}
@@ -88,7 +93,7 @@ func commaJoinStringReprsIdent(idents ...token.Token) string {
 	var tmp []string
 
 	for _, e := range idents {
-		tmp = append(tmp, e.Val)
+		tmp = append(tmp, e.Raw)
 	}
 
 	return strings.Join(tmp, ", ")
@@ -98,7 +103,7 @@ func commaJoinJsonReprsIdent(idents ...token.Token) string {
 	var tmp []string
 
 	for _, e := range idents {
-		tmp = append(tmp, fmt.Sprintf(`"%s"`, e.Val))
+		tmp = append(tmp, fmt.Sprintf(`"%s"`, e.Raw))
 	}
 
 	return strings.Join(tmp, ", ")
@@ -124,22 +129,26 @@ func commaJoinJsonReprsExpr(items ...Expr) string {
 	return strings.Join(tmp, ", ")
 }
 
-func (expr AtomExpr) StringRepr() string { return expr.Token.Val }
+func (expr AtomicExpr) StringRepr() string { return expr.Token.Raw }
 
-func (expr AtomExpr) JsonRepr() string {
-	return fmt.Sprintf(`{"node_name": "AtomExpr", "value": %s}`, expr.Token.Val)
+func (expr AtomicExpr) JsonRepr() string {
+	return fmt.Sprintf(`{"node_name": "AtomicExpr", "value": %#v}`, expr.Token.Raw)
 }
 
-func (expr AtomExpr) Variables() strset.Set {
-	return strset.Set{} // todo
+func (expr AtomicExpr) Variables() strset.Set {
+	if expr.Token.Kind == token.IDENT {
+		return *strset.New(expr.Token.Raw)
+	} else {
+		return *strset.New()
+	}
 }
 
-func (expr AtomExpr) FreeVariables() strset.Set {
-	return strset.Set{} // todo
+func (expr AtomicExpr) FreeVariables() strset.Set {
+	return expr.Variables()
 }
 
-func (expr AtomExpr) BoundVariables() strset.Set {
-	return strset.Set{} // todo
+func (expr AtomicExpr) BoundVariables() strset.Set {
+	return strset.Set{} // empty set
 }
 
 ////////////////////////////////////
@@ -153,16 +162,53 @@ func (expr ListExpr) JsonRepr() string {
 }
 
 func (expr ListExpr) Variables() strset.Set {
-	return strset.Set{} // todo
+	set := strset.New()
+
+	for _, item := range expr.Items {
+		itemSet := item.Variables()
+		set.Merge(&itemSet)
+	}
+
+	return *set
 }
 
 func (expr ListExpr) FreeVariables() strset.Set {
-	return strset.Set{} // todo
+	set := strset.New()
+
+	for _, item := range expr.Items {
+		itemSet := item.FreeVariables()
+		set.Merge(&itemSet)
+	}
+
+	return *set
 }
 
 func (expr ListExpr) BoundVariables() strset.Set {
-	return strset.Set{} // todo
+	set := strset.New()
+
+	for _, item := range expr.Items {
+		itemSet := item.BoundVariables()
+		set.Merge(&itemSet)
+	}
+
+	return *set
 }
+
+////////////////////////////////////
+
+func (expr CellExpr) StringRepr() string {
+	return fmt.Sprintf("<%s, %s>", expr.First.StringRepr(), expr.Second.StringRepr())
+}
+
+func (expr CellExpr) JsonRepr() string {
+	return fmt.Sprintf(`{"node_name": "CellExpr", "first": %s, "second": %s}`, expr.First.StringRepr(), expr.Second.StringRepr())
+}
+
+func (expr CellExpr) Variables() strset.Set { return strset.Set{} /* todo */ }
+
+func (expr CellExpr) FreeVariables() strset.Set { return strset.Set{} /* todo */ }
+
+func (expr CellExpr) BoundVariables() strset.Set { return strset.Set{} /* todo */ }
 
 ////////////////////////////////////
 
@@ -175,15 +221,15 @@ func (expr UnaryExpr) JsonRepr() string {
 }
 
 func (expr UnaryExpr) Variables() strset.Set {
-	return strset.Set{} // todo
+	return expr.Expr.Variables()
 }
 
 func (expr UnaryExpr) FreeVariables() strset.Set {
-	return strset.Set{} // todo
+	return expr.Expr.FreeVariables()
 }
 
 func (expr UnaryExpr) BoundVariables() strset.Set {
-	return strset.Set{} // todo
+	return expr.Expr.BoundVariables()
 }
 
 ////////////////////////////////////
@@ -195,19 +241,25 @@ func (expr BinaryExpr) StringRepr() string {
 
 func (expr BinaryExpr) JsonRepr() string {
 	return fmt.Sprintf(`{"node_name": "BinaryExpr", "operand": "%s", "lhsExpr": %s, "rhsExpr": %s}`,
-		expr.Operand.Val, expr.LhsExpr.JsonRepr(), expr.RhsExpr.JsonRepr())
+		expr.Operand.Raw, expr.LhsExpr.JsonRepr(), expr.RhsExpr.JsonRepr())
 }
 
 func (expr BinaryExpr) Variables() strset.Set {
-	return strset.Set{} // todo
+	lhsVars, rhsVars := expr.LhsExpr.Variables(), expr.RhsExpr.Variables()
+	vars := strset.Union(&lhsVars, &rhsVars)
+	return *vars
 }
 
 func (expr BinaryExpr) FreeVariables() strset.Set {
-	return strset.Set{} // todo
+	lhsSet, rhsSet := expr.LhsExpr.FreeVariables(), expr.RhsExpr.FreeVariables()
+	vars := strset.Union(&lhsSet, &rhsSet)
+	return *vars
 }
 
 func (expr BinaryExpr) BoundVariables() strset.Set {
-	return strset.Set{} // todo
+	lhsSet, rhsSet := expr.LhsExpr.BoundVariables(), expr.RhsExpr.BoundVariables()
+	vars := strset.Union(&lhsSet, &rhsSet)
+	return *vars
 }
 
 ////////////////////////////////////
@@ -217,20 +269,41 @@ func (expr ApplicationExpr) StringRepr() string {
 }
 
 func (expr ApplicationExpr) JsonRepr() string {
-	return fmt.Sprintf(`{"node_name": "ApplicationExpr", "functions": "%s", "args": [%s]`,
+	return fmt.Sprintf(`{"node_name": "ApplicationExpr", "functions": %s, "args": [%s]}`,
 		expr.Function.JsonRepr(), commaJoinJsonReprsExpr(expr.Arguments...))
 }
 
 func (expr ApplicationExpr) Variables() strset.Set {
-	return strset.Set{} // todo
+	set := strset.New()
+
+	for _, arg := range expr.Arguments {
+		itemSet := arg.Variables()
+		set.Merge(&itemSet)
+	}
+
+	return *set
 }
 
 func (expr ApplicationExpr) FreeVariables() strset.Set {
-	return strset.Set{} // todo
+	set := strset.New()
+
+	for _, arg := range expr.Arguments {
+		itemSet := arg.FreeVariables()
+		set.Merge(&itemSet)
+	}
+
+	return *set
 }
 
 func (expr ApplicationExpr) BoundVariables() strset.Set {
-	return strset.Set{} // todo
+	set := strset.New()
+
+	for _, arg := range expr.Arguments {
+		itemSet := arg.BoundVariables()
+		set.Merge(&itemSet)
+	}
+
+	return *set
 }
 
 ////////////////////////////////////
@@ -251,22 +324,51 @@ func (expr ConditionalExpr) JsonRepr() string {
 
 	if expr.Alternative != nil {
 		alternative = expr.Alternative.JsonRepr()
+	} else {
+		alternative = `"nil"`
 	}
 
-	return fmt.Sprintf(`{"node_name": "ConditionalExpr", "condition": "%s", "consequent": %s, "alternative": "%s"`,
+	return fmt.Sprintf(`{"node_name": "ConditionalExpr", "condition": %s, "consequent": %s, "alternative": %s}`,
 		expr.Condition.JsonRepr(), expr.Consequent.JsonRepr(), alternative)
 }
 
 func (expr ConditionalExpr) Variables() strset.Set {
-	return strset.Set{} // todo
+	conditionSet, consequentSet := expr.Condition.Variables(), expr.Consequent.Variables()
+
+	if expr.Alternative != nil {
+		alternativeSet := expr.Alternative.Variables()
+		set := strset.Union(&conditionSet, &consequentSet, &alternativeSet)
+		return *set
+	} else {
+		set := strset.Union(&conditionSet, &consequentSet)
+		return *set
+	}
 }
 
 func (expr ConditionalExpr) FreeVariables() strset.Set {
-	return strset.Set{} // todo
+	conditionSet, consequentSet := expr.Condition.FreeVariables(), expr.Consequent.FreeVariables()
+
+	if expr.Alternative != nil {
+		alternativeSet := expr.Alternative.FreeVariables()
+		set := strset.Union(&conditionSet, &consequentSet, &alternativeSet)
+		return *set
+	} else {
+		set := strset.Union(&conditionSet, &consequentSet)
+		return *set
+	}
 }
 
 func (expr ConditionalExpr) BoundVariables() strset.Set {
-	return strset.Set{} // todo
+	conditionSet, consequentSet := expr.Condition.BoundVariables(), expr.Consequent.BoundVariables()
+
+	if expr.Alternative != nil {
+		alternativeSet := expr.Alternative.BoundVariables()
+		set := strset.Union(&conditionSet, &consequentSet, &alternativeSet)
+		return *set
+	} else {
+		set := strset.Union(&conditionSet, &consequentSet)
+		return *set
+	}
 }
 
 ////////////////////////////////////
@@ -276,54 +378,117 @@ func (expr FunctionExpr) StringRepr() string {
 }
 
 func (expr FunctionExpr) JsonRepr() string {
-	return fmt.Sprintf(`{"node_name": "FunctionExpr", "argument_names": [%s]", "body_expr": %s`,
+	return fmt.Sprintf(`{"node_name": "FunctionExpr", "argument_names": [%s], "body_expr": %s}`,
 		commaJoinJsonReprsIdent(expr.ArgumentNames...), expr.BodyExpr.JsonRepr())
 }
 
 func (expr FunctionExpr) Variables() strset.Set {
-	return strset.Set{} // todo
+	return expr.BodyExpr.Variables()
 }
 
 func (expr FunctionExpr) FreeVariables() strset.Set {
-	return strset.Set{} // todo
+	bodySet := expr.BodyExpr.FreeVariables()
+
+	argNamesSet := strset.New()
+	for _, tok := range expr.ArgumentNames {
+		argNamesSet.Add(tok.Raw)
+	}
+
+	set := strset.Difference(&bodySet, strset.Union(argNamesSet, &bodySet))
+	return *set
 }
 
 func (expr FunctionExpr) BoundVariables() strset.Set {
-	return strset.Set{} // todo
+	bodySet := expr.BodyExpr.FreeVariables()
+
+	argNamesSet := strset.New()
+	for _, tok := range expr.ArgumentNames {
+		argNamesSet.Add(tok.Raw)
+	}
+
+	set := strset.Intersection(argNamesSet, &bodySet)
+	return *set
 }
 
 ////////////////////////////////////
 
 func (expr LetExpr) StringRepr() string {
-	return fmt.Sprintf("let %s = %s in %s", commaJoinStringReprsIdent(expr.Names...),
+	return fmt.Sprintf("let %s = %s in %s", commaJoinStringReprsIdent(expr.InitNames...),
 		commaJoinStringReprsExpr(expr.InitExprs...), expr.BodyExpr.StringRepr())
 }
 
 func (expr LetExpr) JsonRepr() string {
-	return fmt.Sprintf(`{"node_name": "LetExpr", "init_names": [%s]", "init_exprs": [%s], "body_expr": %s`,
-		commaJoinJsonReprsIdent(expr.Names...), commaJoinJsonReprsExpr(expr.InitExprs...), expr.BodyExpr.JsonRepr())
+	return fmt.Sprintf(`{"node_name": "LetExpr", "init_names": [%s], "init_exprs": [%s], "body_expr": %s}`,
+		commaJoinJsonReprsIdent(expr.InitNames...), commaJoinJsonReprsExpr(expr.InitExprs...), expr.BodyExpr.JsonRepr())
 }
 
 func (expr LetExpr) Variables() strset.Set {
-	return strset.Set{} // todo
+	bodyExprSet := expr.BodyExpr.Variables()
+
+	initExprsSet := strset.New()
+	for _, initExpr := range expr.InitExprs {
+		itemSet := initExpr.Variables()
+		initExprsSet.Merge(&itemSet)
+	}
+	set := strset.Union(&bodyExprSet, initExprsSet)
+
+	return *set
 }
 
 func (expr LetExpr) FreeVariables() strset.Set {
-	return strset.Set{} // todo
+	bodyExprSet := expr.BodyExpr.FreeVariables()
+
+	initNamesSet := strset.Set{}
+	for _, name := range expr.InitNames {
+		initNamesSet.Add(name.Raw)
+	}
+
+	initExprsSet := strset.New()
+	for _, initExpr := range expr.InitExprs {
+		itemSet := initExpr.Variables()
+		initExprsSet.Merge(&itemSet)
+	}
+
+	set := strset.Difference(strset.Union(&bodyExprSet, initExprsSet), &initNamesSet)
+
+	return *set
 }
 
 func (expr LetExpr) BoundVariables() strset.Set {
-	return strset.Set{} // todo
+	bodyExprSet := expr.BodyExpr.BoundVariables()
+
+	initNamesSet := strset.New()
+	for _, name := range expr.InitNames {
+		initNamesSet.Add(name.Raw)
+	}
+
+	initExprsSet := strset.New()
+	for _, initExpr := range expr.InitExprs {
+		itemSet := initExpr.Variables()
+		initExprsSet.Merge(&itemSet)
+	}
+
+	set := strset.Intersection(strset.Union(&bodyExprSet, initExprsSet), initNamesSet)
+
+	return *set
 }
 
 ////////////////////////////////////
 
-func (stmt AssignmentStmt) StringRepr() string {
+func (stmt DefStmt) StringRepr() string {
 	return fmt.Sprintf("def %s = %s",
 		commaJoinStringReprsIdent(stmt.Names...), commaJoinStringReprsExpr(stmt.Exprs...))
 }
 
-func (stmt AssignmentStmt) JsonRepr() string {
-	return fmt.Sprintf(`"node_name": "AssignmentStmt", "names": [%s], "exprs": [%s]`,
+func (stmt DefStmt) JsonRepr() string {
+	return fmt.Sprintf(`{"node_name": "DefStmt", "names": [%s], "exprs": [%s]}`,
 		commaJoinJsonReprsIdent(stmt.Names...), commaJoinJsonReprsExpr(stmt.Exprs...))
 }
+
+func (stmt ImportStmt) StringRepr() string { return "" /* todo */ }
+
+func (stmt ImportStmt) JsonRepr() string { return "" /* todo */ }
+
+func (stmt ExportStmt) StringRepr() string { return "" /* todo */ }
+
+func (stmt ExportStmt) JsonRepr() string { return "" /* todo */ }
