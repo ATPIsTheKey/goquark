@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="BranchesTreeState">
     <expand>
       <path>
@@ -11,27 +14,56 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d072c257-24c3-4ddd-8830-0c4ef2a1986d" name="Default Changelist" comment="initial commit">
-      <change afterPath="$PROJECT_DIR$/goquark/core/evaluate/argstack.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/goquark/core/evaluate/cache.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/goquark/core/evaluate/closure.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/goquark/core/evaluate/evaluate.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/goquark/core/runtime/array.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/goquark/core/runtime/boolean.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/goquark/core/runtime/cell.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/goquark/core/runtime/complex.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/goquark/core/runtime/int.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/goquark/core/runtime/list.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/goquark/core/runtime/nil.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/goquark/core/runtime/object.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/goquark/core/runtime/real.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/goquark/core/runtime/string.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/goquark/progs/test.quark" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goquark/core/ast/ast.go" beforeDir="false" afterPath="$PROJECT_DIR$/goquark/core/ast/ast.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goquark/core/ast/walk.go" beforeDir="false" afterPath="$PROJECT_DIR$/goquark/core/ast/walk.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goquark/core/lexer/lexer.go" beforeDir="false" afterPath="$PROJECT_DIR$/goquark/core/lexer/lexer.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goquark/core/parser/parser.go" beforeDir="false" afterPath="$PROJECT_DIR$/goquark/core/parser/parser.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goquark/core/token/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/goquark/core/token/token.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goquark/core/token/tokenkind_string.go" beforeDir="false" afterPath="$PROJECT_DIR$/goquark/core/token/tokenkind_string.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/example_progs/main.q" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/example_progs/misc.q" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/grammar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/ast/ast.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/evaluate/evaluate.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/evaluate/testprogs/misc.q" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/run/program.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/runtime/bool_object.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/runtime/complex_object.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/runtime/frame.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/runtime/fun_object.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/runtime/int_object.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/runtime/list_object.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/runtime/nil_object.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/runtime/object.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/runtime/objecttype_string.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/runtime/real_object.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/runtime/thunk_object.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/runtime/tuple_object.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/token/token.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/token/tokenkind_string.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/utils/source_file.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/prelude/ListOps.q" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/goquark.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/goquark.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/ast/ast.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/ast/walk.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/evaluate/argstack.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/evaluate/cache.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/evaluate/cache.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/evaluate/closure.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/evaluate/evaluate.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/lexer/lexer.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/lexer/lexer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/lexer/lexer_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/lexer/lexer_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/lexer/lexer_test.quark" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/lexer/lexer_test.quark" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/parser/parser.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/parser/parser.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/runtime/array.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/runtime/poison_object.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/runtime/boolean.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/runtime/cell.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/runtime/complex.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/runtime/int.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/runtime/list.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/runtime/nil.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/runtime/object.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/runtime/real.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/runtime/string.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/runtime/string_object.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/token/token.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/core/token/tokenkind_string.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/goquark/progs/test.quark" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -49,7 +81,20 @@
   </component>
   <component name="GOROOT" path="/usr/local/go" />
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="ProjectId" id="1mON5ZYlU1jNgmIcnfjp9yOrUEO" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -63,22 +108,27 @@
     <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="go" />
+    <property name="configurable..is.expanded" value="false" />
+    <property name="configurable.GoLibrariesConfigurable.is.expanded" value="true" />
     <property name="go.import.settings.migrated" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="inlay.hints.go" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.VCS" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/goquark/core" />
-      <recent name="$PROJECT_DIR$/goquark/core/ast" />
-      <recent name="$PROJECT_DIR$/goquark/core/lexer" />
-      <recent name="$PROJECT_DIR$/goquark/core/token" />
+      <recent name="$PROJECT_DIR$/docs/example_progs" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/goquark/core/runtime" />
+      <recent name="$PROJECT_DIR$/goquark/core/runtime/objects" />
+      <recent name="$PROJECT_DIR$/goquark/core/runtime/types" />
     </key>
   </component>
   <component name="RunManager" selected="Go Build.go build goquark">
@@ -112,6 +162,9 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.q" />
+  </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
@@ -128,90 +181,100 @@
     <MESSAGE value="initial commit" />
     <option name="LAST_COMMIT_MESSAGE" value="initial commit" />
   </component>
-  <component name="WindowStateProjectService">
-    <state x="320" y="495" width="630" height="383" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1609615415509">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="320" y="495" width="630" height="383" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1440@0.0.2560.1440" timestamp="1609615415509" />
-    <state x="1040" y="346" width="457" height="573" key="#com.intellij.ide.util.MemberChooser" timestamp="1610272860419">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="1040" y="346" width="457" height="573" key="#com.intellij.ide.util.MemberChooser/0.0.2560.1440@0.0.2560.1440" timestamp="1610272860419" />
-    <state x="449" y="507" width="167" height="497" key="#xdebugger.XInspectDialog" timestamp="1609866075818">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="449" y="507" width="167" height="497" key="#xdebugger.XInspectDialog/0.0.2560.1440@0.0.2560.1440" timestamp="1609866075818" />
-    <state x="895" y="-18" width="1175" height="467" key="GridCell.Tab.-1.bottom" timestamp="1610701970409">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="895" y="-18" width="1175" height="467" key="GridCell.Tab.-1.bottom/0.0.2560.1440@0.0.2560.1440" timestamp="1610701970409" />
-    <state x="895" y="-18" width="1175" height="467" key="GridCell.Tab.-1.center" timestamp="1610701970408">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="895" y="-18" width="1175" height="467" key="GridCell.Tab.-1.center/0.0.2560.1440@0.0.2560.1440" timestamp="1610701970408" />
-    <state x="895" y="-18" width="1175" height="467" key="GridCell.Tab.-1.left" timestamp="1610701970407">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="895" y="-18" width="1175" height="467" key="GridCell.Tab.-1.left/0.0.2560.1440@0.0.2560.1440" timestamp="1610701970407" />
-    <state x="895" y="-18" width="1175" height="467" key="GridCell.Tab.-1.right" timestamp="1610701970408">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="895" y="-18" width="1175" height="467" key="GridCell.Tab.-1.right/0.0.2560.1440@0.0.2560.1440" timestamp="1610701970408" />
-    <state width="1222" height="1372" key="GridCell.Tab.0.bottom" timestamp="1610736688759">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state width="1222" height="1372" key="GridCell.Tab.0.bottom/0.0.2560.1440@0.0.2560.1440" timestamp="1610736688759" />
-    <state width="1222" height="1372" key="GridCell.Tab.0.center" timestamp="1610736688758">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state width="1222" height="1372" key="GridCell.Tab.0.center/0.0.2560.1440@0.0.2560.1440" timestamp="1610736688758" />
-    <state width="1222" height="1372" key="GridCell.Tab.0.left" timestamp="1610736688758">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state width="1222" height="1372" key="GridCell.Tab.0.left/0.0.2560.1440@0.0.2560.1440" timestamp="1610736688758" />
-    <state width="1222" height="1372" key="GridCell.Tab.0.right" timestamp="1610736688758">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state width="1222" height="1372" key="GridCell.Tab.0.right/0.0.2560.1440@0.0.2560.1440" timestamp="1610736688758" />
-    <state x="895" y="-18" width="1276" height="1372" key="GridCell.Tab.1.bottom" timestamp="1610719704414">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="895" y="-18" width="1276" height="1372" key="GridCell.Tab.1.bottom/0.0.2560.1440@0.0.2560.1440" timestamp="1610719704414" />
-    <state x="895" y="-18" width="1276" height="1372" key="GridCell.Tab.1.center" timestamp="1610719704414">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="895" y="-18" width="1276" height="1372" key="GridCell.Tab.1.center/0.0.2560.1440@0.0.2560.1440" timestamp="1610719704414" />
-    <state x="895" y="-18" width="1276" height="1372" key="GridCell.Tab.1.left" timestamp="1610719704414">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="895" y="-18" width="1276" height="1372" key="GridCell.Tab.1.left/0.0.2560.1440@0.0.2560.1440" timestamp="1610719704414" />
-    <state x="895" y="-18" width="1276" height="1372" key="GridCell.Tab.1.right" timestamp="1610719704414">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="895" y="-18" width="1276" height="1372" key="GridCell.Tab.1.right/0.0.2560.1440@0.0.2560.1440" timestamp="1610719704414" />
-    <state x="127" y="327" key="SettingsEditor" timestamp="1609505562957">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="127" y="327" key="SettingsEditor/0.0.2560.1440@0.0.2560.1440" timestamp="1609505562957" />
-    <state x="873" y="428" width="804" height="518" key="Vcs.Push.Dialog.v2" timestamp="1609699164866">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="873" y="428" width="804" height="518" key="Vcs.Push.Dialog.v2/0.0.2560.1440@0.0.2560.1440" timestamp="1609699164866" />
-    <state x="1280" y="0" width="1280" height="1420" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1610272494850">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="1280" y="0" width="1280" height="1420" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.2560.1440@0.0.2560.1440" timestamp="1610272494850" />
-    <state x="895" y="-18" width="1179" height="487" key="dock-window-1" timestamp="1610701970859">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="895" y="-18" width="1179" height="487" key="dock-window-1/0.0.2560.1440@0.0.2560.1440" timestamp="1610701970859" />
-    <state x="1104" y="363" width="321" height="467" key="refactoring.ChangeSignatureDialog" timestamp="1610220892851">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="1104" y="363" width="321" height="467" key="refactoring.ChangeSignatureDialog/0.0.2560.1440@0.0.2560.1440" timestamp="1610220892851" />
-    <state x="303" y="324" width="672" height="678" key="search.everywhere.popup" timestamp="1610703542840">
-      <screen x="0" y="0" width="2560" height="1440" />
-    </state>
-    <state x="303" y="324" width="672" height="678" key="search.everywhere.popup/0.0.2560.1440@0.0.2560.1440" timestamp="1610703542840" />
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/runtime/frame.go</url>
+          <line>58</line>
+          <option name="timeStamp" value="313" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/runtime/frame.go</url>
+          <line>59</line>
+          <option name="timeStamp" value="314" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/runtime/frame.go</url>
+          <line>60</line>
+          <option name="timeStamp" value="315" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/runtime/frame.go</url>
+          <line>63</line>
+          <option name="timeStamp" value="317" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/evaluate/evaluate.go</url>
+          <line>204</line>
+          <option name="timeStamp" value="327" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/evaluate/evaluate.go</url>
+          <line>203</line>
+          <option name="timeStamp" value="328" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/evaluate/evaluate.go</url>
+          <line>202</line>
+          <option name="timeStamp" value="329" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/evaluate/evaluate.go</url>
+          <line>213</line>
+          <option name="timeStamp" value="330" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/runtime/frame.go</url>
+          <line>68</line>
+          <option name="timeStamp" value="331" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/evaluate/evaluate.go</url>
+          <line>36</line>
+          <option name="timeStamp" value="335" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/evaluate/evaluate.go</url>
+          <line>35</line>
+          <option name="timeStamp" value="336" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/evaluate/evaluate.go</url>
+          <line>34</line>
+          <option name="timeStamp" value="337" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/evaluate/evaluate.go</url>
+          <line>207</line>
+          <option name="timeStamp" value="338" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/evaluate/evaluate.go</url>
+          <line>208</line>
+          <option name="timeStamp" value="339" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/evaluate/evaluate.go</url>
+          <line>209</line>
+          <option name="timeStamp" value="341" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/parser/parser.go</url>
+          <line>153</line>
+          <option name="timeStamp" value="342" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/parser/parser.go</url>
+          <line>154</line>
+          <option name="timeStamp" value="343" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/core/parser/parser.go</url>
+          <line>155</line>
+          <option name="timeStamp" value="344" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

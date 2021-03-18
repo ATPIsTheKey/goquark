@@ -1,7 +1,7 @@
 package main
 
 import (
-	"goquark/goquark/core/evaluate"
+	"goquark/src/core/evaluate"
 )
 
 func main() {

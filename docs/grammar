@@ -1,0 +1,128 @@
+Program -> StmtList
+
+StmtList -> Stmt ";" ( Stmt_List )*
+
+Stmt -> ImportStmt | ExportStmt | DefStmt | Expr
+
+DefStmt -> "def" ID "=" Expr
+
+Expr -> LetExpr | FunExpr | Conditional_Expr | Application_Expr | LogicalExpr
+
+LetExpr -> "let" ID_List "=" ExprList "in"  Expr
+
+FunExpr -> "fn" ID_List "->" Expr
+
+Conditional_Expr -> "if" Expr "then" Expr [ "else" Expr ]
+
+Application_Expr -> Expr "(" ExprList ")"
+
+FunComposition -> ID ( "@" ID )
+
+LogicalExpr -> OrExpr
+
+OrExpr -> AndExpr OrExprRhs
+
+OrExprRhs -> ( "xor" | "or" ) AndExpr OrExprRhs | ε
+
+AndExpr -> NotExpr AndExprRhs
+
+AndExprRhs -> "and"  NotExpr AndExprRhs | ε
+
+NotExpr -> "not" NotExpr | CompExpr
+
+CompExpr -> ArithExpr CompExprRhs
+
+CompExprRhs -> ( "==" | "!=" | ">=" | "<" | "<=" ) ArithExpr CompExprRhs | ε
+
+ArithExpr -> TermExpr ArithExprRhs
+
+ArithExprRhs -> ( "+" | "-" ) TermExpr ArithExprRhs | ε
+
+TermExpr -> FactExpr TermExprRhs
+
+TermExprRhs -> ( "*" | "/" | "//" | "%" | "/%" )  FactExpr TermExprRhs | ε
+
+FactExpr -> ( "+" | "-" | "~" ) FactExpr | PowExpr
+
+PowExpr -> NilExpr PowExprRhs
+
+PowExprRhs -> "**" PowExprRhs | ε
+
+NilExpr -> "nil" NilExpr | ListExpr
+
+ListExpr -> List_Access_Expr ListExprRhs
+
+AtomExpr -> "(" Expr ")" | LITERAL
+
+ExprList -> Expr ExprListRhs
+
+ExprListRhs -> "," Expr ExprListRhs | ε
+
+ID_List -> ID IDListRhs
+
+IDListRhs -> "," ID IDListRhs | ε
+
+LEXEME -> ID | NUMBER | STRING | OPERATOR | KEYWORD | SEPARATOR
+
+LITERAL -> ID | NUMBER | STRING
+
+ID -> [a-zA-Z_$]+[a-zA-Z0-9_$]*
+
+COMMENT -> #1(#+|\n)
+
+STRING -> \"[^\"\n]*\"
+
+NUMBER -> INTEGER | REAL | COMPLEX
+
+INTEGER -> ([1-9]+[0-9]*|0+)
+
+REAL -> [ INTEGER ] "." INTEGER | INTEGER "." [ INTEGER ]
+
+COMPLEX -> REAL "i"
+
+OPERATOR -> "+"
+          | "-"
+          | "%"
+          | "*"
+          | "**"
+          | "/"
+          | "//"
+          | "@"
+          | "&"
+          | "|"
+          | "<"
+          | ">"
+          | ">="
+          | "<="
+          | "="
+          | "=="
+          | "!="
+          | "not"
+          | "and"
+          | "or"
+          | "xor"
+          | "nil"
+
+KEYWORD ->  "if"
+          | "then"
+          | "else"
+          | "with"
+          | "let"
+          | "const"
+          | "lambda"
+          | "with"
+          | "fun"
+          | "cout"
+          | "cin"
+
+SKIPPABLE = ( "\n" | "\s" | "\t" ) SKIPPABLE | ε
+
+SEPARATOR -> ","
+           | "."
+           | "{"
+           | "}"
+           | "("
+           | ")"
+           | "["
+           | "]"
+           | ";"
